@@ -38,35 +38,34 @@
         {
             var allDogs = await this.dogShelterRepository.GetAllDogs();
 
-            if (allDogs.Success)
+            if (!allDogs.Success)
             {
-                var filteredDogs = this.dtoAdapter.AdaptDogToDogDto(allDogs.Value.Where(b => b.Breed == breed).ToList());
-                if (!filteredDogs.Any())
-                {
-                    return Outcomes.Failure<IEnumerable<DogDto>>().WithMessage(OutcomeMessages.NoDogsFoundMessage);
-                }
-                return Outcomes.Success(filteredDogs);
+                return Outcomes.Failure<IEnumerable<DogDto>>().WithMessage(allDogs.Messages);
             }
 
-            return Outcomes.Failure<IEnumerable<DogDto>>().WithMessage(allDogs.Messages);
+            var filteredDogs = this.dtoAdapter.AdaptDogToDogDto(allDogs.Value.Where(b => b.Breed == breed).ToList());
+            if (!filteredDogs.Any())
+            {
+                return Outcomes.Failure<IEnumerable<DogDto>>().WithMessage(OutcomeMessages.NoDogsFoundMessage);
+            }
+            return Outcomes.Success(filteredDogs);
         }
 
         public async Task<IOutcome<IEnumerable<DogDto>>> FindBySize(EnumSize size)
         {
             var allDogs = await this.dogShelterRepository.GetAllDogs();
 
-            if (allDogs.Success)
+            if (!allDogs.Success)
             {
-                var filteredDogs = this.FilterDogs(allDogs.Value, size);
-
-                if (!filteredDogs.Any())
-                {
-                    return Outcomes.Failure<IEnumerable<DogDto>>().WithMessage(OutcomeMessages.NoDogsFoundMessage);
-                }
-                return Outcomes.Success(filteredDogs);
+                return Outcomes.Failure<IEnumerable<DogDto>>().WithMessage(allDogs.Messages);
             }
+            var filteredDogs = this.FilterDogs(allDogs.Value, size);
 
-            return Outcomes.Failure<IEnumerable<DogDto>>().WithMessage(allDogs.Messages);
+            if (!filteredDogs.Any())
+            {
+                return Outcomes.Failure<IEnumerable<DogDto>>().WithMessage(OutcomeMessages.NoDogsFoundMessage);
+            }
+            return Outcomes.Success(filteredDogs);
         }
 
         public async Task<IOutcome<IEnumerable<DogDto>>> FindByTemperament(string temperament)
