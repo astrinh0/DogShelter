@@ -1,6 +1,7 @@
 ﻿namespace Application.Tests.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using Application.Adapter;
     using Application.ExternalApiClient;
@@ -31,6 +32,59 @@
         }
 
         [Fact]
+        public async Task DogShelterService_FindByBreed_Failure_NoDogs()
+        {
+            //Arrange
+
+            mockDogShelterRepository
+                .Setup(x => x.GetAllDogs())
+                .ReturnsAsync(Outcomes.Success(new List<Dog>()));
+            mockDtoAdapter
+                .Setup(x => x.AdaptDogToDogDto(It.IsAny<List<Dog>>()))
+                .Returns(new List<DogDto>());
+
+            var dogShelterService = new DogShelterService(mockExternalDogApiClient.Object,
+                mockCalculationService.Object, mockDogShelterRepository.Object, mockDtoAdapter.Object);
+
+            var breed = "canaan";
+            var expectedResult = Outcomes.Failure<IEnumerable<DogDto>>().WithMessage(OutcomeMessages.NoDogsFoundMessage);
+
+            //Act
+
+            var result = await dogShelterService.FindByBreed(breed);
+
+            //Assert
+
+            Assert.NotNull(result);
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Fact]
+        public async Task DogShelterService_FindByBreed_Failure_NoDogsOnDb()
+        {
+            //Arrange
+
+            mockDogShelterRepository
+                .Setup(x => x.GetAllDogs())
+                .Returns(Task.FromResult<IOutcome<List<Dog>>>(Outcomes.Failure<List<Dog>>()));
+
+            var dogShelterService = new DogShelterService(mockExternalDogApiClient.Object,
+                mockCalculationService.Object, mockDogShelterRepository.Object, mockDtoAdapter.Object);
+
+            var breed = "canaan";
+            var expectedResult = Outcomes.Failure<IEnumerable<DogDto>>();
+
+            //Act
+
+            var result = await dogShelterService.FindByBreed(breed);
+
+            //Assert
+
+            Assert.NotNull(result);
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Fact]
         public async Task DogShelterService_FindByBreed_Success()
         {
             //Arrange
@@ -52,6 +106,59 @@
             //Act
 
             var result = await dogShelterService.FindByBreed(breed);
+
+            //Assert
+
+            Assert.NotNull(result);
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Fact]
+        public async Task DogShelterService_FindBySize_Failure_NoDogs()
+        {
+            //Arrange
+
+            mockDogShelterRepository
+               .Setup(x => x.GetAllDogs())
+               .ReturnsAsync(Outcomes.Success(new List<Dog>()));
+            mockDtoAdapter
+                .Setup(x => x.AdaptDogToDogDto(It.IsAny<List<Dog>>()))
+                .Returns(new List<DogDto>());
+
+            var dogShelterService = new DogShelterService(mockExternalDogApiClient.Object,
+                mockCalculationService.Object, mockDogShelterRepository.Object, mockDtoAdapter.Object);
+
+            var size = EnumSize.Small;
+            var expectedResult = Outcomes.Failure<IEnumerable<DogDto>>().WithMessage(OutcomeMessages.NoDogsFoundMessage);
+
+            //Act
+
+            var result = await dogShelterService.FindBySize(size);
+
+            //Assert
+
+            Assert.NotNull(result);
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Fact]
+        public async Task DogShelterService_FindBySize_Failure_NoDogsOnDb()
+        {
+            //Arrange
+
+            mockDogShelterRepository
+               .Setup(x => x.GetAllDogs())
+               .Returns(Task.FromResult<IOutcome<List<Dog>>>(Outcomes.Failure<List<Dog>>()));
+
+            var dogShelterService = new DogShelterService(mockExternalDogApiClient.Object,
+                mockCalculationService.Object, mockDogShelterRepository.Object, mockDtoAdapter.Object);
+
+            var size = EnumSize.Small;
+            var expectedResult = Outcomes.Failure<IEnumerable<DogDto>>();
+
+            //Act
+
+            var result = await dogShelterService.FindBySize(size);
 
             //Assert
 
@@ -88,6 +195,59 @@
             //Act
 
             var result = await dogShelterService.FindBySize(size);
+
+            //Assert
+
+            Assert.NotNull(result);
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Fact]
+        public async Task DogShelterService_FindByTemperament_Failure_NoDogs()
+        {
+            //Arrange
+
+            mockDogShelterRepository
+               .Setup(x => x.GetAllDogs())
+               .ReturnsAsync(Outcomes.Success(new List<Dog>()));
+            mockDtoAdapter
+                .Setup(x => x.AdaptDogToDogDto(It.IsAny<List<Dog>>()))
+                .Returns(new List<DogDto>());
+
+            var dogShelterService = new DogShelterService(mockExternalDogApiClient.Object,
+                mockCalculationService.Object, mockDogShelterRepository.Object, mockDtoAdapter.Object);
+
+            var temperament = "friendly";
+            var expectedResult = Outcomes.Failure<IEnumerable<DogDto>>().WithMessage(OutcomeMessages.NoDogsFoundMessage);
+
+            //Act
+
+            var result = await dogShelterService.FindByTemperament(temperament);
+
+            //Assert
+
+            Assert.NotNull(result);
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Fact]
+        public async Task DogShelterService_FindByTemperament_Failure_NoDogsOnDb()
+        {
+            //Arrange
+
+            mockDogShelterRepository
+               .Setup(x => x.GetAllDogs())
+               .Returns(Task.FromResult<IOutcome<List<Dog>>>(Outcomes.Failure<List<Dog>>()));
+
+            var dogShelterService = new DogShelterService(mockExternalDogApiClient.Object,
+                mockCalculationService.Object, mockDogShelterRepository.Object, mockDtoAdapter.Object);
+
+            var temperament = "friendly";
+            var expectedResult = Outcomes.Failure<IEnumerable<DogDto>>();
+
+            //Act
+
+            var result = await dogShelterService.FindByTemperament(temperament);
 
             //Assert
 
